@@ -1,0 +1,210 @@
+<html>
+    <head>
+        <style>
+            html {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 14px;
+                background-color: #f7f7f7;
+            }
+
+            .main-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+                width: 500px;
+                margin: auto;
+            } 
+
+            .conversion-container {
+                margin: auto;
+                margin-top: 50px;
+                padding: 20px;
+                width: 165px;
+                background: #fff5d8;
+                border: 1px solid #c8c3b4;
+                border-radius: 5px;
+            }
+
+            input {
+                padding: 5px;
+                width: 30px;
+            }
+
+            input.large {
+                width: 60px;
+            }
+
+            input, button {
+                vertical-align: middle;
+            }
+
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            input[type=number] {
+                -moz-appearance: textfield;
+                border: 1px solid #d0d0d0;
+            }
+
+            .calculate {
+                height: 30px;
+                width: 80px;
+                margin-left: 5px;
+            }
+
+            .converted-value {
+                font-size: 20px;
+            }
+
+            .converted-label {
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+
+            .converted-label.miles,
+            .converted-label.km {
+                margin-top: 15px;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div class="main-grid">
+            <div class="conversion-container">
+                <div class="converted-label">km/min</div>
+                <div>
+                    <input type="number" id="mins-km" min="0" max="59" class="mins" /> : 
+                    <input type="number" id="secs-km" min="0" max="59" class="secs" />
+                    <button class="calculate mi">calculate</button>
+                </div>
+                <div class="converted-label miles">miles/min</div>
+                <div class="converted-value mi">-</div>
+            </div>
+
+            <div class="conversion-container">
+                <div class="converted-label">miles/min</div>
+                <div>
+                    <input type="number" id="mins-mi" min="0" max="59" class="mins" /> : 
+                    <input type="number" id="secs-mi" min="0" max="59" class="secs" />
+                    <button class="calculate km">calculate</button>
+                </div>
+                <div class="converted-label km">km/min</div>
+                <div class="converted-value km">-</div>
+            </div>
+
+            <div class="conversion-container">
+                <div class="converted-label">kilometers</div>
+                <div>
+                    <input type="number" id="dist-km" min="0" max="59" class="large" />
+                    <button class="calculate km2mi">calculate</button>
+                </div>
+                <div>
+                    <div class="converted-label km">miles</div>
+                    <div class="converted-value km2mi">-</div>
+                </div>
+            </div>
+
+            <div class="conversion-container">
+                <div class="converted-label">miles</div>
+                <div>
+                    <input type="number" id="dist-mi" min="0" max="59" class="large" />
+                    <button class="calculate mi2km">calculate</button>
+                </div>
+                <div>
+                    <div class="converted-label km">kilometers</div>
+                    <div class="converted-value mi2km">-</div>
+                </div>
+            </div>
+
+        </div>
+    </body>
+
+    <script
+        src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous">        
+    </script>
+
+    <script>
+        const ONE_MILE_TO_KM = 1.60934;
+
+        $(document).ready(function() {
+            $("input").val("");
+        });
+
+        $("input").focus((inpt) => {
+            $(inpt.target).val("");
+        });
+
+        $(".calculate.mi2km").click((e) => {
+            calculateDistance($("#dist-mi"), $(".converted-value.mi2km"));
+        });
+
+        $(".calculate.km2mi").click((e) => {
+            calculateDistance($("#dist-km"), $(".converted-value.km2mi"), false);
+        });
+
+        $(".calculate.mi").click((e) => {
+            calculatePace($("#mins-km"), $("#secs-km"), $(".converted-value.mi"));
+        });
+
+        $(".calculate.km").click((e) => {
+            calculatePace($("#mins-mi"), $("#secs-mi"), $(".converted-value.km"), false);
+        });
+
+        function calculateDistance(distInpt, targetBox, toMiles = true) {
+            if (distInpt.val() === "") {
+                distInpt.val(0);
+            }
+
+            var distance = safeFloat(distInpt.val().replace(",", "."));
+            var converted = 0.0;
+           
+            if (toMiles) {
+                converted = distance * ONE_MILE_TO_KM;
+            } else {
+                converted = distance / ONE_MILE_TO_KM;
+            }
+            targetBox.text(`${converted.toFixed(2)}`);    
+        }
+
+        function calculatePace(minsInpt, secsInpt, targetBox, toMiles = true) {
+            setPaddedValue(minsInpt);
+            setPaddedValue(secsInpt);
+
+            var mins = safeInt(minsInpt.val());
+            var secs = safeInt(secsInpt.val());
+
+            var totalSecs = (secs + (mins * 60));
+            var totalSecsConverted = toMiles ? (totalSecs * ONE_MILE_TO_KM) : (totalSecs / ONE_MILE_TO_KM);
+            var minsConverted = Math.trunc(totalSecsConverted / 60);
+            var secsConverted = Math.round(totalSecsConverted % 60);
+
+            targetBox.text(`${padValue(minsConverted)}:${padValue(secsConverted)}`);    
+        }
+
+        function safeFloat(val) {
+            var valf = parseFloat(val);
+            return isNaN(valf) ? 0.0 : valf;    
+        }
+
+        function safeInt(val) {
+            var vali = parseInt(val);
+            return isNaN(vali) ? 0 : vali;    
+        }
+
+        function setPaddedValue(inpt) {
+            inpt.val(padValue(inpt.val()));
+        }
+
+        function padValue(val) {
+            return String(val).padStart(2, '0');
+        }
+    </script>
+</html>
