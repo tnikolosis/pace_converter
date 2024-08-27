@@ -7,19 +7,16 @@
                 background-color: #f7f7f7;
             }
 
-            .main-grid {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(2, 1fr);
-                grid-column-gap: 0px;
-                grid-row-gap: 0px;
-                width: 500px;
-                margin: auto;
+            .main-container {
+                margin: 50px;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: center;
             } 
 
             .conversion-container {
-                margin: auto;
-                margin-top: 50px;
                 padding: 20px;
                 width: 165px;
                 background: #fff5d8;
@@ -75,7 +72,7 @@
     </head>
 
     <body>
-        <div class="main-grid">
+        <div class="main-container">
             <div class="conversion-container">
                 <div class="converted-label">km/min</div>
                 <div>
@@ -101,7 +98,7 @@
             <div class="conversion-container">
                 <div class="converted-label">kilometers</div>
                 <div>
-                    <input type="number" id="dist-km" min="0" max="59" class="large" />
+                    <input type="number" id="dist-km" min="0" max="59" class="dist large" />
                     <button class="calculate km2mi">calculate</button>
                 </div>
                 <div>
@@ -113,7 +110,7 @@
             <div class="conversion-container">
                 <div class="converted-label">miles</div>
                 <div>
-                    <input type="number" id="dist-mi" min="0" max="59" class="large" />
+                    <input type="number" id="dist-mi" min="0" max="59" class="dist large" />
                     <button class="calculate mi2km">calculate</button>
                 </div>
                 <div>
@@ -156,6 +153,26 @@
 
         $(".calculate.km").click((e) => {
             calculatePace($("#mins-mi"), $("#secs-mi"), $(".converted-value.km"), false);
+        });
+
+        $(".mins").keyup(function () {
+            if (this.value.length == 2) {
+                $(this).next('input').focus();
+            }
+        });
+
+        $(".secs").keyup(function () {
+            if (this.value.length == 2) {
+                $(this).next('button').focus();
+            }
+        });
+
+        $(".dist").keyup(function (e) {
+            if (this.value.length > 0 && e.key == "Enter") {
+                var resultContainer = $($(this).parent().parent().find(".converted-value")[0]);
+                calculateDistance($(this), resultContainer);
+                //$(this).next('button').focus();
+            }
         });
 
         function calculateDistance(distInpt, targetBox, toMiles = true) {
