@@ -189,8 +189,8 @@
 
         $(".dist").keyup(function (e) {
             if (this.value.length > 0 && e.key == "Enter") {
-                var resultContainer = $($(this).parent().parent().find(".converted-value").first());
-                calculateDistance($(this), resultContainer);
+                var targetBox = $($(this).parent().parent().find(".converted-value").first());
+                calculateDistance($(this), targetBox, targetBox.hasClass("mi"));
             }
         });
 
