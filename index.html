@@ -1,5 +1,6 @@
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
             html {
                 font-family: Arial, Helvetica, sans-serif;
@@ -8,6 +9,7 @@
             }
 
             .main-container {
+                width: 100%;
                 margin: 50px;
                 display: flex;
                 flex-direction: row;
@@ -67,6 +69,23 @@
             .converted-label.km {
                 margin-top: 15px;
             }
+            
+            @media screen and (max-width: 500px) {
+                .main-container {
+                    margin: 30px auto;
+                }
+            }
+                        
+            @media screen and (max-height: 700px) {
+                .main-container {
+                    margin: 20px auto;
+                    gap: 10px;
+                }
+
+                .conversion-container {
+                    padding: 15px;
+                }
+            }
 
         </style>
     </head>
@@ -76,46 +95,46 @@
             <div class="conversion-container">
                 <div class="converted-label">km/min</div>
                 <div>
-                    <input type="number" id="mins-km" min="0" max="59" class="mins" /> : 
-                    <input type="number" id="secs-km" min="0" max="59" class="secs" />
-                    <button class="calculate mi">calculate</button>
+                    <input type="number" min="0" max="59" class="mins" /> : 
+                    <input type="number" min="0" max="59" class="secs" />
+                    <button class="calculate pace">calculate</button>
                 </div>
-                <div class="converted-label miles">miles/min</div>
+                <div class="converted-label">miles/min</div>
                 <div class="converted-value mi">-</div>
             </div>
 
             <div class="conversion-container">
                 <div class="converted-label">miles/min</div>
                 <div>
-                    <input type="number" id="mins-mi" min="0" max="59" class="mins" /> : 
-                    <input type="number" id="secs-mi" min="0" max="59" class="secs" />
-                    <button class="calculate km">calculate</button>
+                    <input type="number" min="0" max="59" class="mins" /> : 
+                    <input type="number" min="0" max="59" class="secs" />
+                    <button class="calculate pace">calculate</button>
                 </div>
-                <div class="converted-label km">km/min</div>
+                <div class="converted-label">km/min</div>
                 <div class="converted-value km">-</div>
             </div>
 
             <div class="conversion-container">
                 <div class="converted-label">kilometers</div>
                 <div>
-                    <input type="number" id="dist-km" min="0" max="59" class="dist large" />
-                    <button class="calculate km2mi">calculate</button>
+                    <input type="number" min="0" max="59" class="dist large" />
+                    <button class="calculate dist">calculate</button>
                 </div>
                 <div>
-                    <div class="converted-label km">miles</div>
-                    <div class="converted-value km2mi">-</div>
+                    <div class="converted-label">miles</div>
+                    <div class="converted-value mi">-</div>
                 </div>
             </div>
 
             <div class="conversion-container">
                 <div class="converted-label">miles</div>
                 <div>
-                    <input type="number" id="dist-mi" min="0" max="59" class="dist large" />
-                    <button class="calculate mi2km">calculate</button>
+                    <input type="number" min="0" max="59" class="dist large" />
+                    <button class="calculate dist">calculate</button>
                 </div>
                 <div>
-                    <div class="converted-label km">kilometers</div>
-                    <div class="converted-value mi2km">-</div>
+                    <div class="converted-label">kilometers</div>
+                    <div class="converted-value km">-</div>
                 </div>
             </div>
 
@@ -139,20 +158,21 @@
             $(inpt.target).val("");
         });
 
-        $(".calculate.mi2km").click((e) => {
-            calculateDistance($("#dist-mi"), $(".converted-value.mi2km"));
+        $("button.calculate.dist").click((e) => {
+            var parent = $(e.target).parent();
+            var dist = $(parent.children()[0]);
+            var targetBox = parent.parent().find(".converted-value").first();
+            var toMiles = targetBox.hasClass("mi");
+            calculateDistance(dist, targetBox, toMiles);
         });
 
-        $(".calculate.km2mi").click((e) => {
-            calculateDistance($("#dist-km"), $(".converted-value.km2mi"), false);
-        });
-
-        $(".calculate.mi").click((e) => {
-            calculatePace($("#mins-km"), $("#secs-km"), $(".converted-value.mi"));
-        });
-
-        $(".calculate.km").click((e) => {
-            calculatePace($("#mins-mi"), $("#secs-mi"), $(".converted-value.km"), false);
+        $("button.calculate.pace").click((e) => {
+            var parent = $(e.target).parent();
+            var mins = $(parent.children()[0]);
+            var secs = $(parent.children()[1]);
+            var targetBox = parent.parent().find(".converted-value").first();
+            var toMiles = targetBox.hasClass("mi");
+            calculatePace(mins, secs, targetBox, toMiles);
         });
 
         $(".mins").keyup(function () {
@@ -169,9 +189,8 @@
 
         $(".dist").keyup(function (e) {
             if (this.value.length > 0 && e.key == "Enter") {
-                var resultContainer = $($(this).parent().parent().find(".converted-value")[0]);
+                var resultContainer = $($(this).parent().parent().find(".converted-value").first());
                 calculateDistance($(this), resultContainer);
-                //$(this).next('button').focus();
             }
         });
 
@@ -184,9 +203,9 @@
             var converted = 0.0;
            
             if (toMiles) {
-                converted = distance * ONE_MILE_TO_KM;
-            } else {
                 converted = distance / ONE_MILE_TO_KM;
+            } else {
+                converted = distance * ONE_MILE_TO_KM;
             }
             targetBox.text(`${converted.toFixed(2)}`);    
         }
@@ -202,6 +221,11 @@
             var totalSecsConverted = toMiles ? (totalSecs * ONE_MILE_TO_KM) : (totalSecs / ONE_MILE_TO_KM);
             var minsConverted = Math.trunc(totalSecsConverted / 60);
             var secsConverted = Math.round(totalSecsConverted % 60);
+
+            if (secsConverted == 60) {
+                minsConverted++;
+                secsConverted = 0;
+            }
 
             targetBox.text(`${padValue(minsConverted)}:${padValue(secsConverted)}`);    
         }
