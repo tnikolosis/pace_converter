@@ -1,16 +1,16 @@
 <html>
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, 
+            initial-scale=1.0, maximum-scale=1, user-scalable=no">
         <style>
             html {
                 font-family: Arial, Helvetica, sans-serif;
-                font-size: 14px;
-                background-color: #f7f7f7;
+                font-size: 16px;
+                background-color: #fcf4d9;
             }
 
             .main-container {
-                width: 100%;
-                margin: 50px;
+                padding: 50px;
                 display: flex;
                 flex-direction: row;
                 flex-wrap: wrap;
@@ -21,14 +21,23 @@
             .conversion-container {
                 padding: 20px;
                 width: 165px;
-                background: #fff5d8;
-                border: 1px solid #c8c3b4;
+                background: #8ed2c9;
+                border: 1px solid #00aaa0;
+                border-top: 7px solid #d55b3e;
                 border-radius: 5px;
             }
 
             input {
                 padding: 5px;
                 width: 30px;
+                border: 1px solid #00aaa0;
+                border-radius: 3px;
+                font-size: 14px;
+                outline: none;
+            }
+
+            input:focus, button:focus {
+                border-color:#d55b3e;
             }
 
             input.large {
@@ -47,7 +56,24 @@
 
             input[type=number] {
                 -moz-appearance: textfield;
-                border: 1px solid #d0d0d0;
+                /* border: 1px solid #d0d0d0; */
+            }
+
+            button {
+                background-color: #fcf4d9;
+                border: 1px solid #00aaa0;
+                border-radius: 3px;
+                outline: none;
+                font-size: 14px;
+            }
+
+            button:focus {
+                border-width: 2px;
+            }
+
+            button:hover {
+                border-width: 2px;
+                border-color:#d55b3e;
             }
 
             .calculate {
@@ -72,7 +98,7 @@
             
             @media screen and (max-width: 500px) {
                 .main-container {
-                    margin: 30px auto;
+                    padding: 30px;
                 }
             }
                         
