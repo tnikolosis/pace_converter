@@ -1,296 +1,8 @@
 <html>
     <head>
-        <meta name="viewport" content="width=device-width, 
+        <meta name="viewport" content="width=device-width,
             initial-scale=1.0, maximum-scale=1, user-scalable=no">
-        <style>
-            html {
-                font-family: Arial, Helvetica, sans-serif;
-                font-size: 16px;
-                background-color: #fcf4d9;
-            }
-
-            .main-container {
-                padding: 50px;
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-                gap: 20px;
-                justify-content: center;
-            } 
-
-            .conversion-container {
-                padding: 20px;
-                width: 165px;
-                background: #8ed2c9;
-                border: 1px solid #00aaa0;
-                border-top: 7px solid #d55b3e;
-                border-radius: 5px;
-            }
-
-            input {
-                padding: 5px;
-                width: 30px;
-                border: 1px solid #00aaa0;
-                border-radius: 3px;
-                font-size: 14px;
-                outline: none;
-            }
-
-            input:focus, button:focus {
-                border-color:#d55b3e;
-            }
-
-            input.large {
-                width: 60px;
-            }
-
-            input, button {
-                vertical-align: middle;
-            }
-
-            input::-webkit-outer-spin-button,
-            input::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-
-            input[type=number] {
-                -moz-appearance: textfield;
-                /* border: 1px solid #d0d0d0; */
-            }
-
-            button {
-                background-color: #fcf4d9;
-                border: 1px solid #00aaa0;
-                border-radius: 3px;
-                outline: none;
-                font-size: 14px;
-                color: #394a51;
-            }
-
-            button:focus {
-                border-width: 2px;
-            }
-
-            button:hover {
-                border-width: 2px;
-                border-color:#d55b3e;
-            }
-
-            .calculate {
-                height: 30px;
-                width: 80px;
-                margin-left: 5px;
-            }
-
-            .converted-value {
-                font-size: 20px;
-            }
-
-            .converted-label {
-                margin-top: 5px;
-                margin-bottom: 5px;
-            }
-
-            .converted-label.miles,
-            .converted-label.km {
-                margin-top: 15px;
-            }
-
-            .conversion-result {
-                padding: 10px;
-                background-color: rgba(252, 244, 217, 0.5);
-                border-radius: 3px;
-                margin-top: 15px;
-            }
-
-            .conversion-result .converted-label {
-                font-weight: bold;
-                margin-top: 0;
-                margin-bottom: 5px;
-            }
-
-            .conversion-result .converted-value {
-                font-size: 20px;
-                color: #394a51;
-            }
-            
-            @media screen and (max-width: 500px) {
-                .main-container {
-                    padding: 30px;
-                }
-            }
-                        
-            @media screen and (max-height: 700px) {
-                .main-container {
-                    margin: 20px auto;
-                    gap: 10px;
-                }
-
-                .conversion-container {
-                    padding: 15px;
-                }
-            }
-
-            /* Pace Calculator Styles */
-            .calculator-section {
-                width: 100%;
-                margin-top: 20px;
-                display: flex;
-                justify-content: center;
-            }
-
-            .calculator-container {
-                padding: 25px;
-                background: #8ed2c9;
-                border: 1px solid #00aaa0;
-                border-top: 7px solid #d55b3e;
-                border-radius: 5px;
-                max-width: 600px;
-                width: 100%;
-            }
-
-            .calculator-title {
-                font-size: 20px;
-                font-weight: bold;
-                margin-bottom: 15px;
-                color: #394a51;
-            }
-
-            .calculator-mode {
-                margin-bottom: 20px;
-            }
-
-            .calculator-mode label {
-                display: inline-block;
-                margin-right: 10px;
-                font-weight: bold;
-                min-width: 70px;
-                vertical-align: middle;
-            }
-
-            .calculator-mode select {
-                padding: 5px;
-                border: 1px solid #00aaa0;
-                border-radius: 3px;
-                font-size: 14px;
-                background-color: #fcf4d9;
-                outline: none;
-                vertical-align: middle;
-            }
-
-            .calculator-mode select:focus {
-                border-color: #d55b3e;
-            }
-
-            .calculator-inputs {
-                margin-bottom: 20px;
-            }
-
-            .input-group {
-                margin-bottom: 15px;
-            }
-
-            .input-group label {
-                display: inline-block;
-                margin-right: 10px;
-                font-weight: bold;
-                min-width: 70px;
-                vertical-align: middle;
-            }
-
-            .input-group input[type="number"] {
-                width: 50px;
-                vertical-align: middle;
-            }
-
-            .unit-selector {
-                display: inline-block;
-                margin-left: 10px;
-            }
-
-            .unit-selector label {
-                margin-right: 15px;
-                font-weight: normal;
-                min-width: auto;
-            }
-
-            .unit-selector input[type="radio"] {
-                width: auto;
-                margin-right: 5px;
-            }
-
-            #pace-unit-label {
-                margin-left: 5px;
-                color: #394a51;
-            }
-
-            .hidden {
-                display: none;
-            }
-
-            .calculator-result {
-                padding: 15px;
-                background-color: rgba(252, 244, 217, 0.5);
-                border-radius: 3px;
-                margin-top: 20px;
-            }
-
-            .result-label {
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
-
-            .result-value {
-                font-size: 24px;
-                color: #394a51;
-            }
-
-            .calculate-btn {
-                height: 35px;
-                width: 100px;
-                background-color: #fcf4d9;
-                border: 1px solid #00aaa0;
-                border-radius: 3px;
-                outline: none;
-                font-size: 14px;
-                color: #394a51;
-                cursor: pointer;
-            }
-
-            .calculate-btn:hover,
-            .calculate-btn:focus {
-                border-width: 2px;
-                border-color: #d55b3e;
-            }
-
-            .clear-btn {
-                height: 35px;
-                width: 100px;
-                margin-left: 10px;
-                background-color: #f0e5d8;
-                border: 1px solid #d55b3e;
-                border-radius: 3px;
-                outline: none;
-                font-size: 14px;
-                color: #d55b3e;
-                cursor: pointer;
-            }
-
-            .clear-btn:hover,
-            .clear-btn:focus {
-                border-width: 2px;
-                background-color: #d55b3e;
-                color: #fcf4d9;
-            }
-
-            @media screen and (max-width: 650px) {
-                .calculator-container {
-                    max-width: 90%;
-                }
-            }
-
-        </style>
+        <link rel="stylesheet" href="styles.css">
     </head>
 
     <body>
@@ -402,6 +114,11 @@
             </div>
 
         </div>
+
+        <!-- Theme toggle button -->
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+            <span class="theme-icon">🌙</span>
+        </button>
     </body>
 
     <script
@@ -720,5 +437,30 @@
         $(document).ready(function() {
             updateInputFields();
         });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.querySelector('.theme-icon');
+        const htmlElement = document.documentElement;
+
+        // Check for saved theme preference or default to dark theme
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        htmlElement.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        // Toggle theme when button is clicked
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        // Update the icon based on theme
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
     </script>
 </html>
