@@ -1,10 +1,10 @@
 const ONE_MILE_TO_KM = 1.60934;
 
 $(document).ready(function() {
-    $("input").val("");
+    $("input[type='number'], input[type='text']").val("");
 });
 
-$("input").focus((inpt) => {
+$("input[type='number'], input[type='text']").focus((inpt) => {
     $(inpt.target).val("");
 });
 
@@ -29,6 +29,16 @@ $("button.calculate.pace").click((e) => {
     calculatePace(mins, secs, targetBox, toMiles);
 });
 
+$(".avg-calculate-btn").click((e) => {
+    var container = $(e.target).closest('.averager-container');
+    var mins1 = container.find('.avg-mins-1');
+    var secs1 = container.find('.avg-secs-1');
+    var mins2 = container.find('.avg-mins-2');
+    var secs2 = container.find('.avg-secs-2');
+    var targetBox = container.find(".avg-result-value");
+    calculateAveragePace(mins1, secs1, mins2, secs2, targetBox);
+});
+
 $(".mins").keyup(function () {
     if (this.value.length == 2) {
         $(this).next('input').focus();
@@ -38,6 +48,35 @@ $(".mins").keyup(function () {
 $(".secs").keyup(function () {
     if (this.value.length == 2) {
         $(this).next('button').focus();
+    }
+});
+
+// Auto-focus for pace averager inputs
+$(".avg-mins-1").keyup(function () {
+    if (this.value.length == 2) {
+        var container = $(this).closest('.averager-container');
+        container.find('.avg-secs-1').focus();
+    }
+});
+
+$(".avg-secs-1").keyup(function () {
+    if (this.value.length == 2) {
+        var container = $(this).closest('.averager-container');
+        container.find('.avg-mins-2').focus();
+    }
+});
+
+$(".avg-mins-2").keyup(function () {
+    if (this.value.length == 2) {
+        var container = $(this).closest('.averager-container');
+        container.find('.avg-secs-2').focus();
+    }
+});
+
+$(".avg-secs-2").keyup(function () {
+    if (this.value.length == 2) {
+        var container = $(this).closest('.averager-container');
+        container.find('.avg-calculate-btn').focus();
     }
 });
 
@@ -85,6 +124,32 @@ function calculatePace(minsInpt, secsInpt, targetBox, toMiles = true) {
     }
 
     targetBox.text(`${padValue(minsConverted)}:${padValue(secsConverted)}`);
+}
+
+function calculateAveragePace(mins1Inpt, secs1Inpt, mins2Inpt, secs2Inpt, targetBox) {
+    setPaddedValue(mins1Inpt);
+    setPaddedValue(secs1Inpt);
+    setPaddedValue(mins2Inpt);
+    setPaddedValue(secs2Inpt);
+
+    var mins1 = safeInt(mins1Inpt.val());
+    var secs1 = safeInt(secs1Inpt.val());
+    var mins2 = safeInt(mins2Inpt.val());
+    var secs2 = safeInt(secs2Inpt.val());
+
+    var totalSecs1 = (secs1 + (mins1 * 60));
+    var totalSecs2 = (secs2 + (mins2 * 60));
+
+    var averageSecs = (totalSecs1 + totalSecs2) / 2;
+    var minsAvg = Math.floor(averageSecs / 60);
+    var secsAvg = Math.round(averageSecs % 60);
+
+    if (secsAvg == 60) {
+        minsAvg++;
+        secsAvg = 0;
+    }
+
+    targetBox.text(`${padValue(minsAvg)}:${padValue(secsAvg)}`);
 }
 
 function safeFloat(val) {
@@ -159,7 +224,7 @@ function calculateDistanceFromPace() {
     }
 
     const distance = totalTimeSeconds / paceInSeconds;
-    const unit = $('input[name="distance-unit"]:checked').val();
+    const unit = $('input[name="distance-unit"]:checked').val() || 'metric';
     const unitLabel = unit === 'metric' ? 'km' : 'miles';
 
     return `${distance.toFixed(2)} ${unitLabel}`;
@@ -180,7 +245,7 @@ function calculatePaceFromTime() {
     }
 
     const paceInSeconds = totalTimeSeconds / distance;
-    const unit = $('input[name="distance-unit"]:checked').val();
+    const unit = $('input[name="distance-unit"]:checked').val() || 'metric';
     const unitLabel = unit === 'metric' ? 'min/km' : 'min/mile';
 
     return `${formatPaceOutput(paceInSeconds)} ${unitLabel}`;
@@ -189,7 +254,7 @@ function calculatePaceFromTime() {
 // Main calculation orchestrator
 function performCalculation() {
     const mode = $('#calc-mode').val();
-    const resultBox = $('.result-value');
+    const resultBox = $('.calculator-container .result-value');
 
     let result;
     switch(mode) {
@@ -225,6 +290,7 @@ function updateInputFields() {
         case 'distance':
             // Show time and pace inputs
             $('.time-input-group, .pace-input-group').removeClass('hidden');
+            updatePaceUnitLabel();
             break;
         case 'pace':
             // Show time and distance inputs
@@ -235,84 +301,119 @@ function updateInputFields() {
 
 // Update pace unit label based on distance unit selection
 function updatePaceUnitLabel() {
-    const unit = $('input[name="distance-unit"]:checked').val();
+    const unit = $('input[name="distance-unit"]:checked').val() || 'metric';
     const label = unit === 'metric' ? 'min/km' : 'min/mile';
     $('#pace-unit-label').text(label);
 }
 
-// Pace Calculator Event Handlers
-// Dropdown change handler
-$('#calc-mode').change(function() {
-    updateInputFields();
-    $('.result-value').text('-');
-});
 
-// Unit change handler
-$('input[name="distance-unit"]').change(function() {
-    updatePaceUnitLabel();
-    $('.result-value').text('-');
-});
-
-// Calculate button click
-$('.calculate-btn').click(performCalculation);
-
-// Clear button click
-$('.clear-btn').click(function() {
-    // Clear all calculator inputs
-    $('#time-hours, #time-mins, #time-secs').val('');
-    $('#distance-input').val('');
-    $('#pace-mins, #pace-secs').val('');
-    // Reset result
-    $('.result-value').text('-');
-});
-
-// Enter key triggers calculation
-$('.calculator-inputs input').keyup(function(e) {
-    if (e.key === "Enter") {
-        performCalculation();
-    }
-});
-
-// Auto-focus behavior for time inputs
-$('#time-hours').keyup(function() {
-    if (this.value.length == 2) {
-        $('#time-mins').focus();
-    }
-});
-
-$('#time-mins').keyup(function() {
-    if (this.value.length == 2) {
-        $('#time-secs').focus();
-    }
-});
-
-$('#time-secs').keyup(function() {
-    if (this.value.length == 2) {
-        $('.calculate-btn').focus();
-    }
-});
-
-// Auto-focus behavior for pace inputs
-$('#pace-mins').keyup(function() {
-    if (this.value.length == 2) {
-        $('#pace-secs').focus();
-    }
-});
-
-$('#pace-secs').keyup(function() {
-    if (this.value.length == 2) {
-        $('.calculate-btn').focus();
-    }
-});
-
-// Clear inputs on focus (consistent with existing behavior)
-$('.calculator-inputs input').focus(function() {
+// Clear averager inputs on focus
+$('.averager-inputs input').focus(function() {
     $(this).val("");
+});
+
+// Enter key triggers calculation for averager
+$('.averager-inputs input').keyup(function(e) {
+    if (e.key === "Enter") {
+        $('.avg-calculate-btn').click();
+    }
+});
+
+// Clear button click for averager
+$('.avg-clear-btn').click(function() {
+    // Clear all averager inputs
+    $('.avg-mins-1, .avg-secs-1, .avg-mins-2, .avg-secs-2').val('');
+    // Reset result
+    $('.avg-result-value').text('-');
 });
 
 // Initialize calculator on page load
 $(document).ready(function() {
     updateInputFields();
+
+    // Pace Calculator Event Handlers
+    // Dropdown change handler
+    $('#calc-mode').change(function() {
+        updateInputFields();
+        $('.calculator-container .result-value').text('-');
+    });
+
+    // Unit change handler
+    $('input[name="distance-unit"]').change(function() {
+        updatePaceUnitLabel();
+        // Clear result
+        $('.calculator-container .result-value').text('-');
+        // Auto-recalculate if we have inputs (so user sees the unit change take effect)
+        const mode = $('#calc-mode').val();
+        let hasInputs = false;
+        if (mode === 'time') {
+            hasInputs = $('#distance-input').val() && $('#pace-mins').val();
+        } else if (mode === 'distance') {
+            hasInputs = $('#time-hours').val() && $('#pace-mins').val();
+        } else if (mode === 'pace') {
+            hasInputs = $('#time-hours').val() && $('#distance-input').val();
+        }
+        if (hasInputs) {
+            performCalculation();
+        }
+    });
+
+    // Calculate button click
+    $('.calculator-container .calculate-btn').click(performCalculation);
+
+    // Clear button click
+    $('.calculator-container .clear-btn').click(function() {
+        // Clear all calculator inputs
+        $('#time-hours, #time-mins, #time-secs').val('');
+        $('#distance-input').val('');
+        $('#pace-mins, #pace-secs').val('');
+        // Reset result
+        $('.result-value').text('-');
+    });
+
+    // Enter key triggers calculation
+    $('.calculator-inputs input').keyup(function(e) {
+        if (e.key === "Enter") {
+            performCalculation();
+        }
+    });
+
+    // Auto-focus behavior for time inputs
+    $('#time-hours').keyup(function() {
+        if (this.value.length == 2) {
+            $('#time-mins').focus();
+        }
+    });
+
+    $('#time-mins').keyup(function() {
+        if (this.value.length == 2) {
+            $('#time-secs').focus();
+        }
+    });
+
+    $('#time-secs').keyup(function() {
+        if (this.value.length == 2) {
+            $('.calculate-btn').focus();
+        }
+    });
+
+    // Auto-focus behavior for pace inputs
+    $('#pace-mins').keyup(function() {
+        if (this.value.length == 2) {
+            $('#pace-secs').focus();
+        }
+    });
+
+    $('#pace-secs').keyup(function() {
+        if (this.value.length == 2) {
+            $('.calculate-btn').focus();
+        }
+    });
+
+    // Clear inputs on focus (consistent with existing behavior) - but not radio buttons
+    $('.calculator-inputs input[type="number"]').focus(function() {
+        $(this).val("");
+    });
 });
 
 // Swap button handler for simple converters

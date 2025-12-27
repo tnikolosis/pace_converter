@@ -66,6 +66,7 @@ body {
     flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
+    align-items: flex-start;
 }
 
 /* Conversion cards */
@@ -230,6 +231,7 @@ button:active {
     background: var(--result-bg);
     border-radius: 8px;
     margin-top: 15px;
+    margin-bottom: 5px;
     border: 1px solid var(--result-border);
     transition: background 0.3s ease;
 }
@@ -245,6 +247,55 @@ button:active {
     font-size: 24px;
     color: var(--result-value-color);
     font-weight: 700;
+}
+
+/* Pace Averager Section */
+.averager-section {
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.averager-container {
+    padding: 30px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-top: 4px solid var(--card-border-top);
+    border-radius: 12px;
+    max-width: 442px;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+    transition: background 0.3s ease;
+}
+
+.averager-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.averager-inputs {
+    margin-bottom: 24px;
+}
+
+.averager-inputs .pace-input-row {
+    margin-bottom: 16px;
+}
+
+.averager-inputs label {
+    display: inline-block;
+    margin-right: 12px;
+    font-weight: 600;
+    min-width: 60px;
+    vertical-align: middle;
+    color: var(--text-secondary);
+}
+
+.averager-inputs input[type="number"] {
+    width: 55px;
+    vertical-align: middle;
 }
 
 /* Pace Calculator Section */
@@ -331,7 +382,6 @@ button:active {
 
 .unit-selector {
     display: inline-block;
-    margin-left: 12px;
 }
 
 .unit-selector label {
@@ -477,7 +527,8 @@ button:active {
 
 /* Responsive design */
 @media screen and (max-width: 650px) {
-    .calculator-container {
+    .calculator-container,
+    .averager-container {
         max-width: 90%;
         padding: 24px;
     }
