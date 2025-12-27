@@ -71,7 +71,7 @@ body {
 /* Conversion cards */
 .conversion-container {
     padding: 20px;
-    width: 165px;
+    width: 200px;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-top: 4px solid var(--card-border-top);
@@ -81,7 +81,6 @@ body {
 }
 
 .conversion-container:hover {
-    transform: translateY(-2px);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -182,10 +181,42 @@ button:active {
 
 .converted-label {
     margin-top: 5px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     font-weight: 500;
     color: var(--text-secondary);
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.from-unit-label {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.swap-btn {
+    padding: 2px 8px;
+    height: 22px;
+    font-size: 14px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.swap-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: var(--card-border-top);
+    transform: rotate(180deg);
+}
+
+.swap-btn:active {
+    transform: rotate(180deg) scale(0.9);
 }
 
 .converted-label.miles,
@@ -230,7 +261,7 @@ button:active {
     border: 1px solid var(--card-border);
     border-top: 4px solid var(--card-border-top);
     border-radius: 12px;
-    max-width: 650px;
+    max-width: 442px;
     width: 100%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
     transition: background 0.3s ease;
